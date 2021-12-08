@@ -19,8 +19,7 @@ read -p "Default [0]: " program
 program=${program:-0}
 until [[ $program =~ ^[0-5]{1}$ ]]
 do
-    echo "Wrong input"
-    echo
+    printf "${color4}Wrong number\n\n${nc}"
     read -p "Default [0]: " program
     program=${program:-0}
 done
