@@ -1,0 +1,82 @@
+#!/bin/bash
+#author JMc https://github.com/jmcjm
+
+color1='\033[0;31m'
+color2='\033[0;33m'
+color3='\033[0;34m'
+color4='\033[0;35m'
+nc='\033[0m'
+
+echo -e "${color2}Which conventer do you want to use?${nc}"
+echo -e "${color1}[1]${nc} wav to flac ${color3}(16bits)"
+echo -e "${color1}[2]${nc} wav to flac ${color3}(32bits)"
+echo -e "${color1}[3]${nc} wav to mp3"
+echo -e "${color1}[4]${nc} flac to mp3"
+echo -e "${color1}[5]${nc} YouTube to mp3"
+echo -e "${color4}[0] exit\n${nc}"
+
+read -p "Default [0]: " program
+program=${program:-0}
+until [[ $program =~ ^[0-5]{1}$ ]]
+do
+    echo "Wrong input"
+    echo
+    read -p "Default [0]: " program
+    program=${program:-0}
+done
+
+if [ "$program" = 0 ]
+then
+    exit
+fi
+
+path=$(pwd)
+
+case "$program" in
+  "1") 
+    mkdir "$path/wav"
+    IFS=$'\n'
+    for a in $path/*.wav; do
+      ffmpeg -i "$a" -ab 320k -ac 2 -f flac -sample_fmt s16 -ar 48000 "$( basename "$a" .wav ).flac"
+      mv "${a}" $path/wav/
+      IFS="$OIFS"
+    done ;;
+  "2")
+    mkdir "$path/wav"
+    IFS=$'\n'
+    for a in $path/*.wav; do
+      ffmpeg -i "$a" -ab 320k -ac 2 -f flac -sample_fmt s32 -ar 48000 "$( basename "$a" .wav ).flac"
+      mv "${a}" $path/wav/
+      IFS="$OIFS"
+    done ;;
+  "3") 
+    mkdir "$path/mp3"
+    IFS=$'\n' 
+    for a in $path/*.wav; do
+      ffmpeg -i "$a" -ab 320k -ac 2 -acodec mp3 "$( basename "$a" .wav ).mp3"
+      mv "${a[@]/%wav/mp3}" $path/mp3/
+      IFS="$OIFS"
+    done ;;
+  "4") 
+    mkdir "$path/mp3"
+    IFS=$'\n'
+    for a in $path/*.flac; do
+      ffmpeg -i "$a" -ab 320k -ac 2 -vsync 0 -codec:a libmp3lame -qscale:a 4 "$( basename "$a" .flac ).mp3"
+      mv "${a[@]/%flac/mp3}" $path/mp3/
+      IFS="$OIFS"
+    done ;;
+  "5") 
+    file=/usr/local/bin/youtube-dl
+    if test -f "$file"; then	
+	echo "Paste the url: "
+	read url
+	youtube-dl --extract-audio --audio-format mp3 $url
+    else
+	echo "Installing youtube-dl" 
+	sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
+	sudo chmod a+rx /usr/local/bin/youtube-dl
+	echo "youtube-dl has been installed, run script again"
+    fi
+    ;;
+  *) echo "Wrong number"
+esac
