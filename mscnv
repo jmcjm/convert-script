@@ -52,7 +52,7 @@ case "$program" in
     mkdir "$path/mp3"
     IFS=$'\n' 
     for a in $path/*.wav; do
-      ffmpeg -i "$a" -ab 320k -ac 2 -acodec mp3 "$( basename "$a" .wav ).mp3"
+      ffmpeg -i "$a" -ab 320k -ac 2 -vsync 0 -codec:a libmp3lame -qscale:a 5 "$( basename "$a" .wav ).mp3"
       mv "${a[@]/%wav/mp3}" $path/mp3/
       IFS="$OIFS"
     done ;;
@@ -60,7 +60,7 @@ case "$program" in
     mkdir "$path/mp3"
     IFS=$'\n'
     for a in $path/*.flac; do
-      ffmpeg -i "$a" -ab 320k -ac 2 -vsync 0 -codec:a libmp3lame -qscale:a 4 "$( basename "$a" .flac ).mp3"
+      ffmpeg -i "$a" -ab 320k -ac 2 -vsync 0 -codec:a libmp3lame -qscale:a 5 "$( basename "$a" .flac ).mp3"
       mv "${a[@]/%flac/mp3}" $path/mp3/
       IFS="$OIFS"
     done ;;
