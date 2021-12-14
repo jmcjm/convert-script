@@ -1,5 +1,5 @@
 # music-converter-cli
-A small automatic music converter written in bash
+A small automatic music converter for shell
 # What it can do?
 The script can automatically convert wav to flac and both of them to mp3 by ffmpeg converter and download yt videos to mp3 with youtube-dl.
 # Dependencies
